@@ -1,18 +1,17 @@
-# Dockerfile
+# Use the official Python image from the Docker Hub
+FROM python:3.11-slim
 
-FROM python:3.9
-
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy the requirements.txt file
+# Copy the requirements file into the container
 COPY requirements.txt .
 
-# Install the requirements
+# Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code
+# Copy the current directory contents into the container at /app
 COPY . .
 
-# Command to run the application
-CMD ["uvicorn", "your_module_name:app", "--host", "0.0.0.0", "--port", "7860"]
+# Run the application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
