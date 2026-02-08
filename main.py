@@ -15,7 +15,7 @@ model = None
 tokenizer = None
 model_id = 'Qwen/Qwen3-Embedding-0.6B'
 executor = ThreadPoolExecutor(max_workers=4)
-MAX_TOKENS = 512
+MAX_TOKENS = 32000
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -38,6 +38,10 @@ app = FastAPI(
 
 class TextRequest(BaseModel):
     text: str = Field(..., min_length=1, description="Text to embed")
+    request_id: str | None = Field(None, description="Optional unique identifier for the request")
+
+
+
 
 async def send_to_webhook(url: str, data: dict):
     """Sends data to a webhook URL asynchronously."""
@@ -97,7 +101,8 @@ async def embed_text(request: TextRequest, background_tasks: BackgroundTasks):
         if webhook_url:
             payload = {
                 "text": request.text,
-                "embedding": embedding
+                "embedding": embedding,
+                "request_id": request.request_id 
             }
             background_tasks.add_task(send_to_webhook, webhook_url, payload)
 
